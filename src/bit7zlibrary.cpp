@@ -22,6 +22,14 @@
 #ifdef _WIN32
 #   define Bit7zLoadLibrary( lib_name ) LoadLibraryW( WIDEN( (lib_name) ).c_str() )
 #   define ERROR_CODE( errc ) bit7z::last_error_code()
+#elif defined(__ANDROID__)
+#   include <internal/byopen/byopen.h>
+#   include <dlfcn.h>
+
+#   define Bit7zLoadLibrary( lib_name ) by_dlopen( (lib_name).c_str(), RTLD_LAZY )
+#   define GetProcAddress by_dlsym
+#   define FreeLibrary by_dlclose
+#   define ERROR_CODE( errc ) std::make_error_code( errc )
 #else
 #   include <dlfcn.h>
 

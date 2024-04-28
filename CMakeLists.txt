@@ -98,7 +98,9 @@ set( HEADERS
      src/internal/stringutil.hpp
      src/internal/updatecallback.hpp
      src/internal/util.hpp
-     src/internal/windows.hpp )
+     src/internal/windows.hpp
+     src/internal/byopen/byopen.h
+     src/internal/byopen/prefix.h )
 
 # source files
 set( SOURCES
@@ -178,6 +180,14 @@ message( STATUS "Language Standard for bit7z: C++${CMAKE_CXX_STANDARD}" )
 # library target options
 set( LIB_TARGET bit7z${ARCH_POSTFIX} )
 add_library( ${LIB_TARGET} STATIC )
+
+# byopen
+if( ANDROID )
+    add_library( byopen STATIC src/internal/byopen/byopen.c )
+    set_target_properties(byopen PROPERTIES LINKER_LANGUAGE C)
+    target_link_libraries( ${LIB_TARGET} PRIVATE byopen )
+endif()
+
 target_sources( ${LIB_TARGET}
                 PUBLIC ${PUBLIC_HEADERS}
                 PRIVATE ${HEADERS} ${SOURCES} )
